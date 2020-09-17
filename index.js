@@ -39,16 +39,6 @@ window.onload = () => {
     detectDevice()
 
 
-    const createColorBTN = color => {
-        const btn = document.createElement('button')
-
-        btn.className = 'color'
-        btn.style.backgroundColor = color
-        btn.addEventListener('click', () => lineColor = btn.style.backgroundColor)
-
-        return btn
-    }
-
     // Resizes the canvas to the available size of the window. 
     const resize = () => {
         ctx.canvas.width = window.innerWidth
@@ -104,6 +94,25 @@ window.onload = () => {
         ctx.stroke()
     }
 
+    const strOf = num => {
+        let str = parseInt(num).toString(16)
+        return str.length == 2 ? str : '0' + str
+    }
+
+    const getHexOf = rgb => {
+        rgb = rgb.replace(/[^0-9,]/g, '').split(",")
+        return '#' + strOf(rgb[0]) + strOf(rgb[1]) + strOf(rgb[2])
+    }
+
+    const createColorBTN = color => {
+        const btn = document.createElement('button')
+
+        btn.className = 'color'
+        btn.style.backgroundColor = color
+        btn.addEventListener('click', () => console.log(colorPicker.value = getHexOf(lineColor = btn.style.backgroundColor)))
+
+        return btn
+    }
 
     /**
      * REGISTER EVENTS
