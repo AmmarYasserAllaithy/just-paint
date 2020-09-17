@@ -1,259 +1,150 @@
 window.onload = () => {
 
-    const board = document.querySelector('.board')
+    /**
+     * DECLARE & INITIALIZE DOM ELEMENTS REFERENCES
+     */
     const colorsContainer = document.querySelector('#colors-container')
-    const ctrlContainer = document.querySelector('#ctrl-container')
-    const ctrlAll = document.querySelectorAll('.ctrl')
+    const colorPicker = document.querySelector('#colorPicker')
+    const seekbar = document.querySelector('#seekbar')
     const clearBTN = document.querySelector('#clear')
     const saveBTN = document.querySelector('#save')
     const downloadBTN = document.querySelector('#download')
+    const canvas = document.querySelector('.board')
 
-    const COLORS = [
-        "black",
-        "red",
-        "green",
-        "blue",
-        "orange",
-        "skyblue",
-        "purple",
-        "brown",
-        "saddlebrown",
-        "gray",
-        "lightseagreen",
-        '#345',
-        '#e37c77',
-        '#325a96',
-    ]
+    const ctx = canvas.getContext('2d')
 
-    const createColorBTN = id => {
+    /**
+     * DECLARE & INITIALIZE VARIABLES
+     */
+    let isMobile = false
+
+    // This is the flag that we are going to use to trigger drawing 
+    let paint = false
+
+    // Stores the initial position of the cursor 
+    let coord = { x: 0, y: 0 }
+
+    // This is the drawing Color 
+    let lineColor = colorPicker.value;
+
+    // This is the drawing Color 
+    let lineWidth = seekbar.value
+
+
+    /**
+     * DEFINE FUNCTIONS
+     */
+    const detectDevice = () => isMobile = (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent)
+        || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent.substr(0, 4)))
+    detectDevice()
+
+
+    const createColorBTN = color => {
         const btn = document.createElement('button')
 
-        btn.id = 'c' + id
         btn.className = 'color'
-        btn.style.backgroundColor = COLORS[id]
-
-        btn.addEventListener('click', () => console.log(btn))
+        btn.style.backgroundColor = color
+        btn.addEventListener('click', () => lineColor = btn.style.backgroundColor)
 
         return btn
     }
 
-    for (const id in COLORS) colorsContainer.appendChild(createColorBTN(id))
+    // Resizes the canvas to the available size of the window. 
+    const resize = () => {
+        ctx.canvas.width = window.innerWidth
+        ctx.canvas.height = window.innerHeight
+            - document.querySelector('header').clientHeight
+            - (isMobile ? 20 : 4)
+    }
+
+    // Updates the coordinates of the cursor when an event e is triggered to the coordinates 
+    // where the said event is triggered. 
+    const getPosition = e => {
+        let cRect = canvas.getBoundingClientRect();    // Gets CSS pos, and width/height
+        coord.x = Math.round(e.clientX - cRect.left);  // Subtract the 'left' of the canvas 
+        coord.y = Math.round(e.clientY - cRect.top);   // from the X/Y positions to make  
+
+        validateCoords()
+    }
+
+    const validateCoords = () => {
+        coord.x = coord.x < 0 ? 0 : coord.x > canvas.width ? canvas.width : coord.x
+        coord.y = coord.y < 0 ? 0 : coord.y > canvas.height ? canvas.height : coord.y
+    }
+
+    // The following functions toggle the flag to start and stop drawing 
+    const startPainting = event => {
+        paint = true
+        getPosition(event)
+    }
+
+    const stopPainting = () => paint = false;
+
+    const sketch = event => {
+        if (!paint) return;
+        ctx.beginPath()
+
+        ctx.lineWidth = lineWidth
+
+        // Sets the end of the lines drawn to a round shape. 
+        ctx.lineCap = 'round'
+
+        ctx.strokeStyle = lineColor
+
+        // The cursor to start drawing moves to this coordinate 
+        ctx.moveTo(coord.x, coord.y)
+
+        // The position of the cursor gets updated as we move the mouse around. 
+        getPosition(event)
+
+        // A line is traced from start coordinate to this coordinate 
+        ctx.lineTo(coord.x, coord.y)
+
+        // Draws the line.
+        ctx.stroke()
+    }
 
 
+    /**
+     * REGISTER EVENTS
+     */
+    window.addEventListener('resize', resize);
 
-    clearBTN.addEventListener('click', () => { })
-    saveBTN.addEventListener('click', () => { })
-    downloadBTN.addEventListener('click', () => { })
+    colorPicker.addEventListener('change', () => {
+        lineColor = colorPicker.value
+        colorsContainer.appendChild(createColorBTN(lineColor))
+    })
 
-}
+    seekbar.addEventListener('input', () => {
+        lineWidth = seekbar.value
+        seekbar.style.height = lineWidth
+    })
 
-/*
-function Arabic() {
-    var name = String($("#lang").text());
-    if (name === "عـــربـــي") {
-        $("#lang").text("English");
-        $("html").attr("lang", "ar");
-        $("body").css({ "font-family": "El Messiri" });
-        $("article").html('<div><button id="saveDev"></button></div>'
-            + '<div><button id="save"></button></div>'
-            + '</div><div><button id="clear"></button></div>'
-            + '<div><input type="range" max="20" step="2" value="12"><label></label>&nbsp;');
-        $("button").css({ "font-family": "El Messiri" });
-        $("h1").text("ارسم لوحتك");
-        $("label").text("حجم الفرشة");
-        $("#clear").text("تنظيف اللوحة");
-        $("#save").text("حفظ");
-        $("#saveDev").text("حفظ إلى جهازي");
+    clearBTN.addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height))
+
+    saveBTN.addEventListener('click', () => alert('Under construction, Not finished yet'))
+
+    downloadBTN.addEventListener('click', () => alert('Under construction, Not finished yet'))
+
+    if (isMobile) {
+        //TODO: FIX TOUCH EVENTS
+        canvas.addEventListener('touchstart', startPainting)
+        canvas.addEventListener('touchmove', sketch, false)
+        canvas.addEventListener('touchend', sketch)
     } else {
-        $("#lang").text("عـــربـــي");
-        $("html").attr("lang", "en");
-        $("body").css({ "font-family": "Dosis" });
-        $("article").html('<div>&nbsp;<label></label><input type="range" max="20" step="2" value="12"></div>'
-            + '<div><button id="clear"></button></div>'
-            + '<div><button id="save"></button></div>'
-            + '<div><button id="saveDev"></button></div>');
-        $("button").css({ "font-family": "Dosis" });
-        $("#lang").css({ "font-family": "El Messiri" });
-        $("h1").text("Just Paint");
-        $("label").text("Brush Stroke");
-        $("#clear").text("Clear");
-        $("#save").text("Save");
-        $("#saveDev").text("Save to my device");
+        canvas.addEventListener('mousedown', startPainting)
+        canvas.addEventListener('mouseup', stopPainting)
+        canvas.addEventListener('mousemove', sketch)
     }
-    $("").text("");
-}
-*/
 
-/*
-var c = document.getElementById("board");
-var ctx = c.getContext("2d");
-var img = document.getElementById("scream");
-ctx.drawImage(img, 10, 10);
 
-// Converts image to canvas; returns new canvas element
-function convertImageToCanvas(image) {
-	var canvas = document.createElement("canvas");
-	canvas.width = image.width;
-	canvas.height = image.height;
-	canvas.getContext("2d").drawImage(image, 0, 0);
+    resize() // Resizes the canvas once the window loads
 
-	return canvas;
-}
-
-// Converts canvas to an image
-function convertCanvasToImage(canvas) {
-	var image = new Image();
-	image.src = canvas.toDataURL("image/png");
-	return image;
-}
-
-// Converts canvas to an image with callback
-function convertCanvasToImage(canvas, callback) {
-  var image = new Image();
-  image.onload = function(){
-    callback(image);
-  }
-  image.src = canvas.toDataURL("image/png");
-}
-*/
-
-/*
-// File#: _1_swipe-content
-(function () {
-    var SwipeContent = function (element) {
-        this.element = element;
-        this.delta = [false, false];
-        this.dragging = false;
-        this.intervalId = false;
-        initSwipeContent(this);
-    };
-
-    function initSwipeContent(content) {
-        content.element.addEventListener('mousedown', handleEvent.bind(content));
-        content.element.addEventListener('touchstart', handleEvent.bind(content));
-    };
-
-    function initDragging(content) {
-        //add event listeners
-        content.element.addEventListener('mousemove', handleEvent.bind(content));
-        content.element.addEventListener('touchmove', handleEvent.bind(content));
-        content.element.addEventListener('mouseup', handleEvent.bind(content));
-        content.element.addEventListener('mouseleave', handleEvent.bind(content));
-        content.element.addEventListener('touchend', handleEvent.bind(content));
-    };
-
-    function cancelDragging(content) {
-        //remove event listeners
-        if (content.intervalId) {
-            (!window.requestAnimationFrame) ? clearInterval(content.intervalId) : window.cancelAnimationFrame(content.intervalId);
-            content.intervalId = false;
-        }
-        content.element.removeEventListener('mousemove', handleEvent.bind(content));
-        content.element.removeEventListener('touchmove', handleEvent.bind(content));
-        content.element.removeEventListener('mouseup', handleEvent.bind(content));
-        content.element.removeEventListener('mouseleave', handleEvent.bind(content));
-        content.element.removeEventListener('touchend', handleEvent.bind(content));
-    };
-
-    function handleEvent(event) {
-        switch (event.type) {
-            case 'mousedown':
-            case 'touchstart':
-                startDrag(this, event);
-                break;
-            case 'mousemove':
-            case 'touchmove':
-                drag(this, event);
-                break;
-            case 'mouseup':
-            case 'mouseleave':
-            case 'touchend':
-                endDrag(this, event);
-                break;
-        }
-    };
-
-    function startDrag(content, event) {
-        content.dragging = true;
-        // listen to drag movements
-        initDragging(content);
-        content.delta = [parseInt(unify(event).clientX), parseInt(unify(event).clientY)];
-        // emit drag start event
-        emitSwipeEvents(content, 'dragStart', content.delta, event.target);
-    };
-
-    function endDrag(content, event) {
-        cancelDragging(content);
-        // credits: https://css-tricks.com/simple-swipe-with-vanilla-javascript/
-        var dx = parseInt(unify(event).clientX),
-            dy = parseInt(unify(event).clientY);
-
-        // check if there was a left/right swipe
-        if (content.delta && (content.delta[0] || content.delta[0] === 0)) {
-            var s = getSign(dx - content.delta[0]);
-
-            if (Math.abs(dx - content.delta[0]) > 30) {
-                (s < 0) ? emitSwipeEvents(content, 'swipeLeft', [dx, dy]) : emitSwipeEvents(content, 'swipeRight', [dx, dy]);
-            }
-
-            content.delta[0] = false;
-        }
-        // check if there was a top/bottom swipe
-        if (content.delta && (content.delta[1] || content.delta[1] === 0)) {
-            var y = getSign(dy - content.delta[1]);
-
-            if (Math.abs(dy - content.delta[1]) > 30) {
-                (y < 0) ? emitSwipeEvents(content, 'swipeUp', [dx, dy]) : emitSwipeEvents(content, 'swipeDown', [dx, dy]);
-            }
-
-            content.delta[1] = false;
-        }
-        // emit drag end event
-        emitSwipeEvents(content, 'dragEnd', [dx, dy]);
-        content.dragging = false;
-    };
-
-    function drag(content, event) {
-        if (!content.dragging) return;
-        // emit dragging event with coordinates
-        (!window.requestAnimationFrame)
-            ? content.intervalId = setTimeout(function () { emitDrag.bind(content, event); }, 250)
-            : content.intervalId = window.requestAnimationFrame(emitDrag.bind(content, event));
-    };
-
-    function emitDrag(event) {
-        emitSwipeEvents(this, 'dragging', [parseInt(unify(event).clientX), parseInt(unify(event).clientY)]);
-    };
-
-    function unify(event) {
-        // unify mouse and touch events
-        return event.changedTouches ? event.changedTouches[0] : event;
-    };
-
-    function emitSwipeEvents(content, eventName, detail, el) {
-        var trigger = false;
-        if (el) trigger = el;
-        // emit event with coordinates
-        var event = new CustomEvent(eventName, { detail: { x: detail[0], y: detail[1], origin: trigger } });
-        content.element.dispatchEvent(event);
-    };
-
-    function getSign(x) {
-        if (!Math.sign) {
-            return ((x > 0) - (x < 0)) || +x;
-        } else {
-            return Math.sign(x);
-        }
-    };
-
-    window.SwipeContent = SwipeContent;
-
-    //initialize the SwipeContent objects
-    var swipe = document.getElementById('board');
-    if (swipe.length > 0) {
-        for (var i = 0; i < swipe.length; i++) {
-            (function (i) { new SwipeContent(swipe[i]); })(i);
-        }
+    if (isMobile) {
+        document.body.querySelectorAll('*').forEach(elem => {
+            elem.disabled = true
+            elem.style.opacity = 0.7
+        })
+        document.body.className += ' soon'
     }
-}());
-*/
+}

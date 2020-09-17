@@ -8,25 +8,28 @@
     <link rel="icon" href="http://www.rjjulia.com/sites/rjjulia.com/files/paint%20brush%20clip%20art.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dosis">
     <link rel="stylesheet" href="index.css">
-    <script src="index.js"></script>
 </head>
 
 <body>
-    <h1>Just Paint</h1>
+    <header>
+        <h1>Just Paint</h1>
+
+        <section class="container">
+            <section id="colors-container">
+                <input id="colorPicker" type="color" value="#325a96">
+            </section>
+
+            <input id="seekbar" type="range" min="1" max="50" step="1" value="10">
+
+            <button class="ctrl" id="clear"><img class="ic" src="images/clean-code.svg"></button>
+            <button class="ctrl" id="save"><img class="ic" src="images/floppy-disk.svg"></button>
+            <button class="ctrl" id="download"><img class="ic" src="images/download.svg"></button>
+        </section>
+    </header>
 
     <canvas class="board"></canvas>
 
-    <section class="container" id="colors-container"></section>
-
-    <section class="container" id="range-container">
-        <input id="input" type="range" max="50" step="1" value="20">
-    </section>
-
-    <section class="container" id="ctrl-container">
-        <button class="ctrl" id="clear">Clear</button>
-        <button class="ctrl" id="save">Save</button>
-        <button class="ctrl" id="download">Download</button>
-    </section>
+    <script src="index.js"></script>
 </body>
 
 </html>

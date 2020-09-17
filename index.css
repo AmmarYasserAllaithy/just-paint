@@ -9,86 +9,113 @@ body {
 	background-color: mediumaquamarine;
 }
 
+header {
+	display: flex;
+	justify-content: space-between;
+}
+
 h1 {
 	color: white;
 	margin: 0.5em;
-	text-align: center;
 	text-shadow: 3px 6px 6px #0003;
 	letter-spacing: 2pt;
-}
-
-.board {
-	width: 100vw;
-	height: 65vh;
-	box-shadow: 0 0px 5px #0003;
-	background-color: white;
+	text-align: center;
 }
 
 .container {
-	display: flex;
-	justify-content: center;
-	padding: 7px;
 	background-color: #fff;
+	padding: 7px;
+	text-align: center;
 }
 
-#colors-container {
-	margin-top: -4px;
+.container * {
+	border: none;
+	outline: none;
+	cursor: pointer;
+	vertical-align: middle;
+	display: inline-block;
 }
 
-#ctrl-container {
-	border-top: 1px solid #333;
-	justify-content: space-around;
+#colorPicker {
+	background: transparent;
+	width: 40px;
+	height: 45px;
+}
+
+#colorPicker::-webkit-color-swatch {
+	border: none;
+	border-radius: 4px;
+	box-shadow: 1px 1px 4px #0003;
 }
 
 .color {
 	width: 25px;
 	height: 25px;
 	border-radius: 2px;
-	outline: none;
-	border: none;
-	cursor: pointer;
 	box-shadow: 2px 2px 4px #0003;
 	margin: 3px;
 }
 .color:hover {
-	transform: scale(1.25);
+	transform: scale(1.1);
 }
 
-input,
-input::-webkit-slider-thumb {
+#seekbar,
+#seekbar::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	border-radius: 20px;
-	outline: none;
 }
 
-input {
-	width: 75%;
-	height: 7px;
-	margin: 15px auto;
+#seekbar {
+	max-height: 8px;
 	background-color: #444;
 	box-shadow: 2px 2px 4px #0003;
 }
 
-input::-webkit-slider-thumb {
-	width: 18px;
-	height: 18px;
-	background-color: #fff;
+#seekbar::-webkit-slider-thumb {
+	width: 20px;
+	height: 20px;
+	background: #fff;
 	border: 2px solid #333;
 }
-input:active::-webkit-slider-thumb {
-	background-color: #333;
-	border: 2px solid #fff;
+#seekbar:active::-webkit-slider-thumb {
+	background: #333;
+	border-color: #fff;
 }
 
 .ctrl {
-	border: none;
-	outline: none;
 	background: transparent;
-	cursor: pointer;
 	padding: 5px 10px;
-	font-size: 18px;
-	border-radius: 4px;
 }
-.ctrl:hover {
-	background-color: #0002;
+
+.ic {
+	width: 25px;
+}
+
+.board {
+	background: white;
+	box-shadow: 0 0px 5px #0003;
+}
+
+@media screen and (max-width: 600px) {
+	header {
+		display: block;
+	}
+	.ic {
+		width: 20px;
+	}
+}
+
+.soon::before {
+	content: "Mobile version hasn't been launched yet, it still under construction.";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 80vw;
+	padding: 1.5em 1em;
+	box-sizing: border-box;
+	font-size: xx-large;
+	font-weight: bold;
+	text-align: center;
+	background: #0005;
 }
