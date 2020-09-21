@@ -119,3 +119,8 @@ h1 {
 	text-align: center;
 	background: #0005;
 }
+
+.erase {
+	background: #0003;
+	border-radius: 4px;
+}

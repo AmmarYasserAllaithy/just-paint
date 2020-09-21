@@ -6,6 +6,7 @@ window.onload = () => {
     const colorsContainer = document.querySelector('#colors-container')
     const colorPicker = document.querySelector('#colorPicker')
     const seekbar = document.querySelector('#seekbar')
+    const eraseBTN = document.querySelector('#erase')
     const clearBTN = document.querySelector('#clear')
     const saveBTN = document.querySelector('#save')
     const downloadBTN = document.querySelector('#download')
@@ -109,9 +110,19 @@ window.onload = () => {
 
         btn.className = 'color'
         btn.style.backgroundColor = color
-        btn.addEventListener('click', () => console.log(colorPicker.value = getHexOf(lineColor = btn.style.backgroundColor)))
+        btn.addEventListener('click', () => {
+            colorPicker.value = getHexOf(lineColor = btn.style.backgroundColor)
+            eraserMode(false)
+        })
 
         return btn
+    }
+
+    const eraserMode = erase => {
+        if (erase) {
+            lineColor = "#fff"
+            eraseBTN.className += ' erase'
+        } else eraseBTN.className = eraseBTN.className.replace('erase', '')
     }
 
     /**
@@ -128,6 +139,10 @@ window.onload = () => {
         lineWidth = seekbar.value
         seekbar.style.height = lineWidth
     })
+
+    document.querySelectorAll('#colorPicker, .ctrl').forEach(elem => elem.addEventListener('click', () => eraserMode(false)))
+
+    eraseBTN.addEventListener('click', () => eraserMode(true))
 
     clearBTN.addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height))
 
