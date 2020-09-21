@@ -51,10 +51,14 @@ window.onload = () => {
     // Updates the coordinates of the cursor when an event e is triggered to the coordinates 
     // where the said event is triggered. 
     const getPosition = e => {
-        let cRect = canvas.getBoundingClientRect();    // Gets CSS pos, and width/height
-        coord.x = Math.round(e.clientX - cRect.left);  // Subtract the 'left' of the canvas 
-        coord.y = Math.round(e.clientY - cRect.top);   // from the X/Y positions to make  
-
+        let cRect = canvas.getBoundingClientRect()    // Gets CSS pos, and width/height
+        if (isMobile) {
+            coord.x = Math.round(e.touches[0].pageX - cRect.left)
+            coord.y = Math.round(e.touches[0].pageY - cRect.top)
+        } else {
+            coord.x = Math.round(e.clientX - cRect.left)
+            coord.y = Math.round(e.clientY - cRect.top)
+        }
         validateCoords()
     }
 
@@ -131,7 +135,8 @@ window.onload = () => {
     window.addEventListener('resize', resize);
 
     colorPicker.addEventListener('input', () => lineColor = colorPicker.value)
-    if (!isMobile) colorPicker.addEventListener('change', () => colorsContainer.appendChild(createColorBTN(lineColor)))
+    if (isMobile) colorPicker.addEventListener('click', () => lineColor = colorPicker.value)
+    else colorPicker.addEventListener('change', () => colorsContainer.appendChild(createColorBTN(lineColor)))
 
     seekbar.addEventListener('input', () => {
         lineWidth = seekbar.value
@@ -148,25 +153,10 @@ window.onload = () => {
 
     downloadBTN.addEventListener('click', () => alert('Under construction, Not finished yet'))
 
-    if (isMobile) {
-        //TODO: FIX TOUCH EVENTS
-        canvas.addEventListener('touchstart', startPainting)
-        canvas.addEventListener('touchmove', sketch, false)
-        canvas.addEventListener('touchend', sketch)
-    } else {
-        canvas.addEventListener('mousedown', startPainting)
-        canvas.addEventListener('mouseup', stopPainting)
-        canvas.addEventListener('mousemove', sketch)
-    }
+    canvas.addEventListener(isMobile ? 'touchstart' : 'mousedown', startPainting)
+    canvas.addEventListener(isMobile ? 'touchmove' : 'mousemove', sketch)
+    canvas.addEventListener(isMobile ? 'touchend' : 'mouseup', stopPainting)
 
 
     resize() // Resizes the canvas once the window loads
-
-    if (isMobile) {
-        document.body.querySelectorAll('*').forEach(elem => {
-            elem.disabled = true
-            elem.style.opacity = 0.7
-        })
-        document.body.className += ' soon'
-    }
 }
