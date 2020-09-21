@@ -130,10 +130,8 @@ window.onload = () => {
      */
     window.addEventListener('resize', resize);
 
-    colorPicker.addEventListener('change', () => {
-        lineColor = colorPicker.value
-        colorsContainer.appendChild(createColorBTN(lineColor))
-    })
+    colorPicker.addEventListener('input', () => lineColor = colorPicker.value)
+    if (!isMobile) colorPicker.addEventListener('change', () => colorsContainer.appendChild(createColorBTN(lineColor)))
 
     seekbar.addEventListener('input', () => {
         lineWidth = seekbar.value
