@@ -5,6 +5,10 @@
 	font-family: Dosis;
 }
 
+::-webkit-scrollbar {
+	display: none;
+}
+
 body {
 	background-color: mediumaquamarine;
 }
@@ -92,8 +96,18 @@ h1 {
 }
 
 .board {
-	background: white;
 	box-shadow: 0 0px 5px #0003;
+	cursor: none;
+}
+
+.cursor {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	border-radius: 50%;
+	border: 1px solid #fff5;
+	pointer-events: none;
 }
 
 @media screen and (max-width: 600px) {
